@@ -1,18 +1,11 @@
 // Source: http://www.codeproject.com/Articles/20917/Creating-a-Custom-Settings-Provider , License: The Code Project Open License (CPOL)
 // To use: For each setting in properties: Properties->Provider set to PortableSettingsProvider
 // If this does not compile: Project->Add Reference->.Net-> Doubleclick "System.Configuration"
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Configuration;
-using System.Configuration.Provider;
-using System.Windows.Forms;
 using System.Collections.Specialized;
-using Microsoft.Win32;
+using System.Configuration;
 using System.Xml;
-using System.IO;
- 
+
 public class PortableSettingsProvider : SettingsProvider {
  
   const string SETTINGSROOT = "Settings";
@@ -107,32 +100,24 @@ public class PortableSettingsProvider : SettingsProvider {
       return _settingsXML;
     }
   }
- 
-  private string GetValue(SettingsProperty setting) {
-    string ret = "";
- 
-    try {
-      if (IsRoaming(setting)) {
-        ret = SettingsXML.SelectSingleNode(SETTINGSROOT + "/" + setting.Name).InnerText;
-      }
-      else {
-        ret = SettingsXML.SelectSingleNode(SETTINGSROOT + "/" + Environment.MachineName + "/" + setting.Name).InnerText;
-      }
+
+    private string GetValue(SettingsProperty setting)
+    {
+        string? ret = null;
+        try
+        {
+            var key = IsRoaming(setting)
+                      ? SETTINGSROOT + "/" + setting.Name
+                      : SETTINGSROOT + "/" + Environment.MachineName + "/" + setting.Name;
+            ret = SettingsXML.SelectSingleNode(key)?.InnerText;
+        }
+
+        catch (Exception) { }
+
+        return ret ?? setting.DefaultValue?.ToString() ?? string.Empty;
     }
- 
-    catch (Exception ex) {
-      if ((setting.DefaultValue != null)) {
-        ret = setting.DefaultValue.ToString();
-      }
-      else {
-        ret = "";
-      }
-    }
- 
-    return ret;
-  }
- 
-  private void SetValue(SettingsPropertyValue propVal) {
+
+    private void SetValue(SettingsPropertyValue propVal) {
  
     XmlElement MachineNode = default(XmlElement);
     XmlElement SettingNode = default(XmlElement);
