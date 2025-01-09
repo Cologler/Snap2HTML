@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using CommandLine.Utility;
-using System.IO;
+﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 
 namespace Snap2HTML
 {
-	public partial class frmMain : Form
+    public partial class frmMain : Form
 	{
 		// This runs on a separate thread from the GUI
 		private void backgroundWorker_DoWork( object sender, DoWorkEventArgs e )
@@ -53,7 +46,7 @@ namespace Snap2HTML
 			var sbTemplate = new StringBuilder();
 			try
 			{
-				using( System.IO.StreamReader reader = new System.IO.StreamReader( System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + System.IO.Path.DirectorySeparatorChar + "template.html", Encoding.UTF8 ) )
+				using( System.IO.StreamReader reader = new System.IO.StreamReader(Path.GetDirectoryName( Application.ExecutablePath ) + Path.DirectorySeparatorChar + "template.html", Encoding.UTF8 ) )
 				{
 					sbTemplate.Append(reader.ReadToEnd());
 				}
@@ -131,7 +124,11 @@ namespace Snap2HTML
 
 				if( settings.openInBrowser )
 				{
-					System.Diagnostics.Process.Start( settings.outputFile );
+                    Process.Start(new ProcessStartInfo
+					{
+						FileName = settings.outputFile,
+						UseShellExecute = true
+					});
 				}
 			}
 			catch( Exception ex )
@@ -191,8 +188,8 @@ namespace Snap2HTML
 					created_date = "";
 					try
 					{
-						modified_date = Utils.ToUnixTimestamp( System.IO.Directory.GetLastWriteTime( dirName ).ToLocalTime() ).ToString();
-						created_date = Utils.ToUnixTimestamp( System.IO.Directory.GetCreationTime( dirName ).ToLocalTime() ).ToString();
+						modified_date = Utils.ToUnixTimestamp(Directory.GetLastWriteTime( dirName ).ToLocalTime() ).ToString();
+						created_date = Utils.ToUnixTimestamp(Directory.GetCreationTime( dirName ).ToLocalTime() ).ToString();
 					}
 					catch( Exception ex )
 					{
@@ -205,7 +202,7 @@ namespace Snap2HTML
 					List<string> files;
 					try
 					{
-						files = new List<string>( System.IO.Directory.GetFiles( dirName, "*.*", System.IO.SearchOption.TopDirectoryOnly ) );
+						files = new List<string>(Directory.GetFiles( dirName, "*.*", SearchOption.TopDirectoryOnly ) );
 					}
 					catch( Exception ex )
 					{
@@ -234,8 +231,8 @@ namespace Snap2HTML
 						try
 						{
 							System.IO.FileInfo fi = new System.IO.FileInfo( sFile );
-							var isHidden = ( fi.Attributes & System.IO.FileAttributes.Hidden ) == System.IO.FileAttributes.Hidden;
-							var isSystem = ( fi.Attributes & System.IO.FileAttributes.System ) == System.IO.FileAttributes.System;
+							var isHidden = ( fi.Attributes & FileAttributes.Hidden ) == FileAttributes.Hidden;
+							var isSystem = ( fi.Attributes & FileAttributes.System ) == FileAttributes.System;
 
 							if( ( isHidden && settings.skipHiddenItems ) || ( isSystem && settings.skipSystemItems ) )
 							{
@@ -286,7 +283,7 @@ namespace Snap2HTML
 
 			try
 			{
-				foreach( string d in System.IO.Directory.GetDirectories( sDir ) )
+				foreach( string d in Directory.GetDirectories( sDir ) )
 				{
 					bool includeThisFolder = true;
 
