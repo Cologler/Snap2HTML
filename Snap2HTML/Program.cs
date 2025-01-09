@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Snap2HTML
@@ -13,6 +12,7 @@ namespace Snap2HTML
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmMain());
         }
